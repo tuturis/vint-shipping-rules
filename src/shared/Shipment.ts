@@ -1,15 +1,28 @@
+import { ShippingCostRule } from ".";
 import { PackingSize, ShippingProvider } from "../enums";
 import { ShipmentPricingRepository } from "../repository/ShipmentPricing";
 import { ShippingRulesStorage } from "./ShippingRulesStorage";
 
+type AppliedRules = Map<string, Map<"source" | "target", Shipment>>;
 export class Shipment {
   private ignore: boolean = false;
+  private _appliedRules: AppliedRules = new Map();
 
   shippingCost: number = Infinity;
   shippingDiscount: number = 0;
   date!: Date;
   shipmentProviderCode!: ShippingProvider;
   packageSizeCode!: PackingSize;
+
+  getAppliedRules(): AppliedRules {
+    return this._appliedRules;
+  }
+  addAppliedRules(ruleName: string, source: Shipment, target: Shipment) {
+    const value = new Map();
+    value.set("source", source);
+    value.set("target", target);
+    this._appliedRules.set(ruleName, value);
+  }
 
   public applyShippingRates() {
     this.shippingCost = ShipmentPricingRepository.getPrice(this);
@@ -19,16 +32,23 @@ export class Shipment {
     let shippingRules = ShippingRulesStorage.getRules();
 
     shippingRules.forEach((shippingRule, key) => {
+      const source = this.partialCopy(this);
       const shipmentWithRulesApplied = shippingRule.applyRule(this);
+      const target = this.partialCopy(shipmentWithRulesApplied);
+      this.addAppliedRules(key, source, target);
       Object.assign(this, shipmentWithRulesApplied);
-      // or either block below - theres pros and cons to both:)
-      // this.shippingCost = shipmentWithRulesApplied.shippingCost;
-      // this.shippingDiscount = shipmentWithRulesApplied.shippingDiscount;
-      // this.shipmentProviderCode = shipmentWithRulesApplied.shipmentProviderCode;
-      // this.packageSizeCode = shipmentWithRulesApplied.packageSizeCode;
     });
   }
 
+  private partialCopy(shipment: Shipment): Shipment {
+    const copy = new Shipment();
+    copy.date = this.date;
+    copy.shipmentProviderCode = this.shipmentProviderCode;
+    copy.packageSizeCode = this.packageSizeCode;
+    copy.shippingCost = this.shippingCost;
+    copy.shippingDiscount = this.shippingDiscount;
+    return copy;
+  }
   public validate(): boolean {
     if (
       this.date === undefined ||
