@@ -16,8 +16,11 @@ export class Main {
       const lines = chunk.toString().split(/\r?\n/);
       lines.forEach((line) => {
         const shipment = new Shipment().fromString(line);
-        shipment.applyShippingRates();
-        shipment.applyShippingRules();
+        shipment.validate();
+        if (shipment.validate()) {
+          shipment.applyShippingRates();
+          shipment.applyShippingRules();
+        }
         process.stdout.write(shipment.toString());
       });
     });
