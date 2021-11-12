@@ -1,5 +1,5 @@
 import { ShippingRule } from "../decorators";
-import { ShipmentsDiscountRepository } from "../repository/ShipmenDiscounts";
+import { ShipmentsDiscountRepository } from "../repository/ShipmentDiscounts";
 import { Shipment, ShippingCostRule } from "../shared";
 
 /**
