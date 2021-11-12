@@ -11,7 +11,6 @@ export class SmallPackageLowestCostRule extends ShippingCostRule {
       const shipmentPricingData = new ShipmentPricing().getLowestPrice(
         shipment.packageSizeCode
       );
-      // Don't change the shipment object if price stays the same but different provider was selected
       if (
         shipment.shippingCost == shipmentPricingData.price &&
         shipment.shipmentProviderCode !==
@@ -19,10 +18,10 @@ export class SmallPackageLowestCostRule extends ShippingCostRule {
       ) {
         return shipment;
       }
+      const discount = shipment.shippingCost - shipmentPricingData.price;
       shipment.shipmentProviderCode = shipmentPricingData.shippingProviderCode;
       shipment.shippingCost = shipmentPricingData.price;
-      shipment.shippingDiscount =
-        shipment.shippingCost - shipmentPricingData.price;
+      shipment.shippingDiscount = discount;
     }
     return shipment;
   }
