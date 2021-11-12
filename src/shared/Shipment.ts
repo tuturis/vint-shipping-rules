@@ -16,7 +16,7 @@ export class Shipment {
   }
 
   public applyShippingRules() {
-    let shippingRules = ShippingRulesStorage.getRules() as Map<any, any>;
+    let shippingRules = ShippingRulesStorage.getRules();
 
     shippingRules.forEach((shippingRule, key) => {
       const shipmentWithRulesApplied = shippingRule.applyRule(this);
