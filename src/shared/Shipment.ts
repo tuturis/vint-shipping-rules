@@ -70,15 +70,28 @@ export class Shipment {
   }
 
   public toString(delimiter = " "): string {
-    const date = this.date.toISOString().slice(0, 10);
-    // format shipping discount to 2 decimal places and divide by 10 or show '-' the discount is 0
+    const date = this.date?.toISOString().slice(0, 10);
+
     const shippingDiscount =
       this.shippingDiscount === 0
         ? "-"
         : (this.shippingDiscount / 100).toFixed(2);
 
-    const shippingCost = (this.shippingCost / 100).toFixed(2);
+    const shippingCost =
+      this.shippingCost === Infinity
+        ? Infinity
+        : (this.shippingCost / 100).toFixed(2);
 
-    return `${date}${delimiter}${this.shipmentProviderCode}${delimiter}${this.packageSizeCode}${delimiter}${shippingCost}${delimiter}${shippingDiscount} \n`;
+    const dateValue = this.date === undefined ? "Ignored" : date;
+    const packageSizeCodeValue =
+      this.packageSizeCode === undefined ? "Ignored" : this.packageSizeCode;
+    const shipmentProviderCodeValue =
+      this.shipmentProviderCode === undefined
+        ? "Ignored"
+        : this.shipmentProviderCode;
+    const shippingCostValue =
+      shippingCost === Infinity ? "Ignored" : shippingCost;
+
+    return `${dateValue}${delimiter}${shipmentProviderCodeValue}${delimiter}${packageSizeCodeValue}${delimiter}${shippingCostValue}${delimiter}${shippingDiscount} \n`;
   }
 }
