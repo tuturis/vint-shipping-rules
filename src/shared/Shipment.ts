@@ -1,5 +1,5 @@
 import { PackingSize, ShippingProvider } from "../enums";
-import { ShipmentPricing } from "../repository/ShipmentPricing";
+import { ShipmentPricingRepository } from "../repository/ShipmentPricing";
 import { ShippingRulesStorage } from "./ShippingRulesStorage";
 
 export class Shipment {
@@ -12,7 +12,7 @@ export class Shipment {
   packageSizeCode!: PackingSize;
 
   public applyShippingRates() {
-    this.shippingCost = new ShipmentPricing().getPrice(this);
+    this.shippingCost = ShipmentPricingRepository.getPrice(this);
   }
 
   public applyShippingRules() {

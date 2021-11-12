@@ -1,4 +1,4 @@
-import { PackingSize, ShippingProvider } from "..";
+import { PackingSize, ShippingProvider } from "../enums";
 import { Shipment } from "../shared";
 
 type PricingDataShipmentProvider = Exclude<
