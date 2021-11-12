@@ -1,5 +1,6 @@
-import { Main } from "./main";
-
+export * from "./decorators";
 export * from "./enums";
 export * from "./main";
-new Main();
+export * from "./repository";
+export * from "./rules";
+export * from "./shared";
