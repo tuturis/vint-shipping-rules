@@ -1,4 +1,3 @@
-import { ShippingCostRule } from ".";
 import { PackingSize, ShippingProvider } from "../enums";
 import { ShipmentPricingRepository } from "../repository/ShipmentPricing";
 import { ShippingRulesStorage } from "./ShippingRulesStorage";
