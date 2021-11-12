@@ -16,7 +16,7 @@ export interface ShipmentPricingData {
   price: number;
 }
 
-export class ShipmentPricing {
+class ShipmentPricing {
   pricingData: PricingData = {
     MR: {
       [PackingSize.Small]: 200,
@@ -65,3 +65,4 @@ export class ShipmentPricing {
     };
   }
 }
+export const ShipmentPricingRepository = new ShipmentPricing();

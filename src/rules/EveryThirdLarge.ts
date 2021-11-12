@@ -8,7 +8,7 @@ import { Shipment, ShippingCostRule } from "../shared";
  */
 
 @ShippingRule
-export class EveryThirdLarge extends ShippingCostRule {
+export class EveryThirdLarge implements ShippingCostRule {
   public applyRule(shipment: Shipment): Shipment {
     const {
       shipmentProviderCode,
