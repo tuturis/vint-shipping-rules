@@ -1,3 +1,5 @@
+import { ShippingCostRule } from ".";
+
 class ShippingRule {
   static instance: ShippingRule;
   static getInstance() {
@@ -7,15 +9,15 @@ class ShippingRule {
     return ShippingRule.instance;
   }
 
-  private metadata: Map<Function, any> = new Map();
+  private metadata: Map<string, ShippingCostRule> = new Map();
 
-  public addRule(target: any, metadata: any) {
+  public addRule(target: string, metadata: ShippingCostRule) {
     this.metadata.set(target, metadata);
   }
-  public getRule(target: any): any {
+  public getRule(target: string): ShippingCostRule | undefined {
     return this.metadata.get(target);
   }
-  public getRules(): Map<Function, any> {
+  public getRules(): Map<string, ShippingCostRule> {
     return this.metadata;
   }
 

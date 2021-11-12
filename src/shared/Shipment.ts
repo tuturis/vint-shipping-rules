@@ -26,14 +26,15 @@ export class Shipment {
   }
 
   public applyShippingRules() {
-    let shippingRules = ShippingRulesStorage.getRules() as any;
-
-    const shipmentWithRulesApplied = new shippingRules().applyRule(this);
-    Object.assign(this, shipmentWithRulesApplied);
-    // or either block below - theres pros and cons to both:)
-    // this.shippingCost = shipmentWithRulesApplied.shippingCost;
-    // this.shippingDiscount = shipmentWithRulesApplied.shippingDiscount;
-    // this.shipmentProviderCode = shipmentWithRulesApplied.shipmentProviderCode;
-    // this.packageSizeCode = shipmentWithRulesApplied.packageSizeCode;
+    let shippingRules = ShippingRulesStorage.getRules() as Map<any, any>;
+    shippingRules.forEach((shippingRule, key) => {
+      const shipmentWithRulesApplied = shippingRule.applyRule(this);
+      Object.assign(this, shipmentWithRulesApplied);
+      // or either block below - theres pros and cons to both:)
+      // this.shippingCost = shipmentWithRulesApplied.shippingCost;
+      // this.shippingDiscount = shipmentWithRulesApplied.shippingDiscount;
+      // this.shipmentProviderCode = shipmentWithRulesApplied.shipmentProviderCode;
+      // this.packageSizeCode = shipmentWithRulesApplied.packageSizeCode;
+    });
   }
 }

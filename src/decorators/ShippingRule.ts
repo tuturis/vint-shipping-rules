@@ -1,7 +1,9 @@
+import { Shipment, ShippingCostRule } from "../shared";
 import { ShippingRulesStorage } from "../shared/ShippingRulesStorage";
 
-export function ShippingRule<T extends { new (...args: any[]): {} }>(
+export function ShippingRule<T extends { new (): ShippingCostRule }>(
   constructor: T
 ) {
-  ShippingRulesStorage.addRule(constructor.name, constructor);
+  // @TODO check is constructor is an singleton
+  ShippingRulesStorage.addRule(constructor.name, new constructor());
 }
