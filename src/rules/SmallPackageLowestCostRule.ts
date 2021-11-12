@@ -4,6 +4,10 @@ import { ShippingRule } from "../decorators/ShippingRule";
 import { PackingSize } from "../enums";
 import { ShipmentPricing } from "../repository/ShipmentPricing";
 
+/**
+ * Rule to calculate shipping cost for small package:
+ * - All S shipments should always match the lowest S package price among the providers.
+ */
 @ShippingRule
 export class SmallPackageLowestCostRule extends ShippingCostRule {
   public applyRule(shipment: Shipment): Shipment {
