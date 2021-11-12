@@ -1,6 +1,6 @@
 import { PackingSize, ShippingProvider } from "../enums";
 import { ShipmentPricing } from "../repository/ShipmentPricing";
-import { MetadataStorage } from "./MetadataStorage";
+import { ShippingRulesStorage } from "./ShippingRulesStorage";
 
 export class Shipment {
   shippingCost: number = Infinity;
@@ -26,9 +26,7 @@ export class Shipment {
   }
 
   public applyShippingRules() {
-    let shippingRules = MetadataStorage.getInstance().getMetadata(
-      "shippingRules"
-    ) as any;
+    let shippingRules = ShippingRulesStorage.getRules() as any;
 
     const shipmentWithRulesApplied = new shippingRules().applyRule(this);
     Object.assign(this, shipmentWithRulesApplied);
