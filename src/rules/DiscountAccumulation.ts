@@ -13,9 +13,6 @@ export class DiscountAccumulation implements ShippingCostRule {
       ShipmentsDiscountRepository.getMonthlyDiscountAmount(shipment) >= 1000 &&
       shipment.shippingDiscount > 0
     ) {
-      console.log(
-        "DiscountAccumulation: Discounts cannot exceed 10€ in a month, reverting all discounts"
-      );
       const appliedRules = shipment.getAppliedRules();
       appliedRules.forEach((rule, key) => {
         const shipmentRuleSourceData = rule.get("source");
