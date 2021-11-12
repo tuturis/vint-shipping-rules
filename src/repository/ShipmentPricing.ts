@@ -39,15 +39,17 @@ class ShipmentPricing {
     ];
   }
 
-  getLowestPrice(size: PackingSize): ShipmentPricingData {
-    const lowestPriceData = Object.entries(this.pricingData) as [
+  getLowestPrice(shipment: Shipment): ShipmentPricingData {
+    const { packageSizeCode, shipmentProviderCode, shippingCost } = shipment;
+
+    const priceData = Object.entries(this.pricingData) as [
       PricingDataShipmentProvider,
       PackingSizePrice
     ][];
 
-    const lp = lowestPriceData.reduce(
+    const cheapestPrice = priceData.reduce(
       (acc, pd) => {
-        const price = pd[1][size];
+        const price = pd[1][packageSizeCode];
         if (price < acc.price) {
           const provider = pd[0];
           acc.price = price;
@@ -55,13 +57,13 @@ class ShipmentPricing {
         }
         return acc;
       },
-      { price: Infinity, provider: ShippingProvider.None }
+      { price: shippingCost, provider: shipmentProviderCode }
     );
 
     return {
-      shippingProviderCode: lp.provider,
-      packingSizeCode: size,
-      price: lp.price,
+      shippingProviderCode: cheapestPrice.provider,
+      packingSizeCode: packageSizeCode,
+      price: cheapestPrice.price,
     };
   }
 }

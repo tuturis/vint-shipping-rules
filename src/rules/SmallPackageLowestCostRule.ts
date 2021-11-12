@@ -12,9 +12,8 @@ import { ShipmentPricingRepository } from "../repository/ShipmentPricing";
 export class SmallPackageLowestCostRule implements ShippingCostRule {
   public applyRule(shipment: Shipment): Shipment {
     if (shipment.packageSizeCode === PackingSize.Small) {
-      const shipmentPricingData = ShipmentPricingRepository.getLowestPrice(
-        shipment.packageSizeCode
-      );
+      const shipmentPricingData =
+        ShipmentPricingRepository.getLowestPrice(shipment);
       if (
         shipment.shippingCost == shipmentPricingData.price &&
         shipment.shipmentProviderCode !==
