@@ -16,7 +16,6 @@ export class EveryThirdLarge implements ShippingCostRule {
       shippingCost,
       shippingDiscount,
     } = shipment;
-    // probably would be better if incremented somewhere else
     ShipmentsRepository.incrementMonthlyShipments(shipment);
     if (
       shipmentProviderCode === "LP" &&
