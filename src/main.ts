@@ -13,10 +13,9 @@ export class Main {
   public processInput() {
     const inputStream = createReadStream(this.filename);
     inputStream.on("data", (chunk) => {
-      const lines = chunk.toString().split("\r\n");
+      const lines = chunk.toString().split(/\r?\n/);
       lines.forEach((line) => {
         const shipment = new Shipment().fromString(line);
-        console.log(shipment.toString());
         shipment.applyShippingRates();
         shipment.applyShippingRules();
         process.stdout.write(shipment.toString());
