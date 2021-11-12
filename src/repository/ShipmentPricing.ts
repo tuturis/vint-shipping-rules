@@ -1,10 +1,13 @@
 import { PackingSize, ShippingProvider } from "..";
 import { Shipment } from "../shared";
 
+type PricingDataShipmentProvider = Exclude<
+  ShippingProvider,
+  ShippingProvider.None
+>;
+type PackingSizePrice = { [size in PackingSize]: number };
 export type PricingData = {
-  [provider in ShippingProvider]: {
-    [size in PackingSize]: number;
-  };
+  [provider in PricingDataShipmentProvider as PricingDataShipmentProvider]: PackingSizePrice;
 };
 
 export interface ShipmentPricingData {
@@ -28,38 +31,36 @@ export class ShipmentPricing {
   };
 
   getPrice(shipment: Shipment): number {
-    console.log("---------");
-    console.log(
-      shipment.shipmentProviderCode,
-      "    -----     ",
-      shipment.packageSizeCode
-    );
+    if (shipment.shipmentProviderCode === ShippingProvider.None) {
+      return Infinity;
+    }
     return this.pricingData[shipment.shipmentProviderCode][
       shipment.packageSizeCode
     ];
   }
 
   getLowestPrice(size: PackingSize): ShipmentPricingData {
-    const lowestPriceData = Object.entries(this.pricingData);
-    // @ts-ignore something weird with ts lint
+    const lowestPriceData = Object.entries(this.pricingData) as [
+      PricingDataShipmentProvider,
+      PackingSizePrice
+    ][];
+
     const lp = lowestPriceData.reduce(
-      //@ts-ignore
       (acc, pd) => {
         const price = pd[1][size];
         if (price < acc.price) {
           const provider = pd[0];
           acc.price = price;
-          // @ts-ignore
           acc.provider = provider;
         }
+        return acc;
       },
-      { price: 0, provider: "-" }
-    ) as { price: number; provider: ShippingProvider };
+      { price: Infinity, provider: ShippingProvider.None }
+    );
 
     return {
-      //@ts-ignore
-      shippingProvider: lp.provider as ShippingProvider,
-      packingSize: size,
+      shippingProviderCode: lp.provider,
+      packingSizeCode: size,
       price: lp.price,
     };
   }
