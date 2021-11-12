@@ -3,15 +3,22 @@ import { ShipmentsDiscountRepository } from "../repository/ShipmentDiscounts";
 import { Shipment, ShippingCostRule } from "../shared";
 
 /**
- * - Accumulated discounts cannot exceed 10 € in a calendar month. If there are not enough funds to fully
+ * - Accumulated discounts cannot exceed 10 € in a calendar month.
+ *  If there are not enough funds to fully
  * cover a discount this calendar month, it should be covered partially.
  */
 @ShippingRule
 export class DiscountAccumulation implements ShippingCostRule {
+  monthlyDiscountLimit = 1000;
+
   public applyRule(shipment: Shipment): Shipment {
+    const { shippingDiscount, shippingCost } = shipment;
+    const totalMonthlyDiscount =
+      ShipmentsDiscountRepository.getMonthlyDiscountAmount(shipment);
+
     if (
-      ShipmentsDiscountRepository.getMonthlyDiscountAmount(shipment) >= 1000 &&
-      shipment.shippingDiscount > 0
+      totalMonthlyDiscount >= this.monthlyDiscountLimit &&
+      shippingDiscount > 0
     ) {
       const appliedRules = shipment.getAppliedRules();
       appliedRules.forEach((rule, key) => {
@@ -25,6 +32,15 @@ export class DiscountAccumulation implements ShippingCostRule {
         }
       });
     }
+
+    if (totalMonthlyDiscount + shippingDiscount >= this.monthlyDiscountLimit) {
+      const discountToDistribute =
+        totalMonthlyDiscount + shippingDiscount - this.monthlyDiscountLimit;
+
+      shipment.shippingDiscount = shippingDiscount - discountToDistribute;
+      shipment.shippingCost = shippingCost + discountToDistribute;
+    }
+
     ShipmentsDiscountRepository.incrementMonthlyDiscountAmount(shipment);
     return shipment;
   }
