@@ -13,7 +13,7 @@ export class Shipment {
   shippingCost: number = Infinity;
   shippingDiscount: number = 0;
 
-  getAppliedRules(): AppliedRules {
+  get appliedRules(): AppliedRules {
     return this._appliedRules;
   }
   private addAppliedRules(

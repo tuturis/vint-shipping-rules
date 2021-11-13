@@ -20,7 +20,7 @@ export class DiscountAccumulation implements ShippingCostRule {
       totalMonthlyDiscount >= this.monthlyDiscountLimit &&
       shippingDiscount > 0
     ) {
-      const appliedRules = shipment.getAppliedRules();
+      const appliedRules = shipment.appliedRules;
       appliedRules.forEach((rule, key) => {
         const shipmentRuleSourceData = rule.get("source");
         if (shipmentRuleSourceData?.shippingDiscount === 0) {
