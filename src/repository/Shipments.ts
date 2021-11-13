@@ -1,4 +1,3 @@
-import { PackingSize } from "..";
 import { Shipment } from "../shared";
 
 interface IShipments {
@@ -68,6 +67,9 @@ class Shipments {
     return this.shipments[shipmentYear][shipmentMonth][shipmentProviderCode][
       packageSizeCode
     ];
+  }
+  clearAll() {
+    this.shipments = {};
   }
 }
 

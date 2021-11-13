@@ -30,6 +30,11 @@ class ShipmentsDiscount {
     }
     this.shipmentDiscounts[year][month] += shippingDiscount;
   }
+
+  clearAll() {
+    this.shipmentDiscounts = {};
+    return this;
+  }
 }
 
 export const ShipmentsDiscountRepository = new ShipmentsDiscount();
