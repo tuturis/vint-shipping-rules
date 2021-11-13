@@ -7,7 +7,7 @@ import { Shipment, ShippingCostRule } from "../shared";
  *  but only once a calendar month.
  */
 
-@ShippingRule
+@ShippingRule()
 export class EveryThirdLarge implements ShippingCostRule {
   public applyRule(shipment: Shipment): Shipment {
     const {

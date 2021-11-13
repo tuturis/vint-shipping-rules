@@ -8,7 +8,7 @@ import { ShipmentPricingRepository } from "../repository/ShipmentPricing";
  * Rule to calculate shipping cost for small package:
  * - All S shipments should always match the lowest S package price among the providers.
  */
-@ShippingRule
+@ShippingRule()
 export class SmallPackageLowestCostRule implements ShippingCostRule {
   public applyRule(shipment: Shipment): Shipment {
     if (shipment.packageSizeCode === PackingSize.Small) {

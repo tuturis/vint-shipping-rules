@@ -1,3 +1,4 @@
+import { equal } from "assert/strict";
 import { ShippingCostRule } from ".";
 
 class ShippingRule {
@@ -9,15 +10,24 @@ class ShippingRule {
     return ShippingRule.instance;
   }
 
-  private metadata: Map<string, ShippingCostRule> = new Map();
+  private metadata: [string, ShippingCostRule][] = [];
 
-  public addRule(target: string, metadata: ShippingCostRule) {
-    this.metadata.set(target, metadata);
+  public addRule(
+    target: string,
+    metadata: ShippingCostRule,
+    { appliesAfter }: { appliesAfter?: "afterAll" } = {}
+  ) {
+    if (appliesAfter === "afterAll") {
+      this.metadata.push([target, metadata]);
+    } else {
+      this.metadata.unshift([target, metadata]);
+    }
   }
   public getRule(target: string): ShippingCostRule | undefined {
-    return this.metadata.get(target);
+    const rule = this.metadata.find((rule) => rule[0] === target);
+    return rule ? rule[1] : undefined;
   }
-  public getRules(): Map<string, ShippingCostRule> {
+  public getRules() {
     return this.metadata;
   }
 

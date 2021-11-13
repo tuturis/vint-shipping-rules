@@ -7,7 +7,7 @@ import { Shipment, ShippingCostRule } from "../shared";
  *  If there are not enough funds to fully
  * cover a discount this calendar month, it should be covered partially.
  */
-@ShippingRule
+@ShippingRule({ appliesAfter: "afterAll" })
 export class DiscountAccumulation implements ShippingCostRule {
   monthlyDiscountLimit = 1000;
 
