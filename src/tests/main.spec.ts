@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import mockfs from "mock-fs";
 
-import { Main } from "../main";
+import { VintShippingRules } from "../VintShippingRules";
 import { ShipmentsDiscountRepository } from "../repository/ShipmentDiscounts";
 import { ShipmentsRepository } from "../repository/Shipments";
 import { testData } from "./testData";
@@ -18,7 +18,7 @@ describe("Integration test", function () {
   describe("Main", async () => {
     it("should apply rules to inputs", async () => {
       const payloads: string[] = [];
-      const main = new Main();
+      const main = new VintShippingRules();
       main.output = (payload: string) => payloads.push(payload);
       await main.processInput();
 

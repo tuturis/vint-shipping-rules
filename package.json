@@ -8,7 +8,7 @@
     "test": "ts-mocha --paths src/**/*.spec.ts",
     "test:watch": "ts-mocha --paths src/**/*.spec.ts -w",
     "test:js": "npm run build && mocha --paths -p dist/**/*.spec.js",
-    "package": "npm run build && pkg -C Brotli -t node12-linux-x64,node12-macos-x64,node12-win-x64 --output ./bin/vint-shipping-rules  ./build/index.js"
+    "package": "npm run build && pkg -C Brotli -t node12-linux-x64,node12-macos-x64,node12-win-x64 --output ./bin/vint-shipping-rules  ./build/init.js"
   },
   "author": "Artūras Sotničenko",
   "license": "ISC",
