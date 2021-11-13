@@ -3,25 +3,27 @@ import { Shipment } from "./shared/Shipment";
 import "./rules";
 import { EventEmitter } from "stream";
 
-export class Main extends EventEmitter {
+type VintShippingRulesOptions = {
+  pathToFile: string;
+  lineEndings?: string | RegExp;
+  delimiter?: string;
+};
+export class VintShippingRules extends EventEmitter {
   private filename: string;
   private lineEndings: string | RegExp;
   private delimiter: string;
+
   constructor(
-    {
-      filename,
-      lineEndings,
-      delimiter,
-    }: { filename: string; lineEndings: string | RegExp; delimiter: string } = {
-      filename: "input.txt",
+    options: VintShippingRulesOptions = {
+      pathToFile: "input.txt",
       lineEndings: /\r?\n/,
       delimiter: " ",
     }
   ) {
     super();
-    this.filename = filename;
-    this.lineEndings = lineEndings;
-    this.delimiter = delimiter;
+    this.filename = options.pathToFile;
+    this.lineEndings = options.lineEndings ? options.lineEndings : /\r?\n/;
+    this.delimiter = options.delimiter ? options.delimiter : " ";
 
     this.on("shipmentData", (data) => {
       this.output(data.toString());
