@@ -4,19 +4,23 @@ import { ShippingRulesStorage } from "./ShippingRulesStorage";
 
 type AppliedRules = Map<string, Map<"source" | "target", Shipment>>;
 export class Shipment {
-  private ignore: boolean = false;
   private _appliedRules: AppliedRules = new Map();
 
-  shippingCost: number = Infinity;
-  shippingDiscount: number = 0;
   date!: Date;
   shipmentProviderCode!: ShippingProvider;
   packageSizeCode!: PackingSize;
 
+  shippingCost: number = Infinity;
+  shippingDiscount: number = 0;
+
   getAppliedRules(): AppliedRules {
     return this._appliedRules;
   }
-  addAppliedRules(ruleName: string, source: Shipment, target: Shipment) {
+  private addAppliedRules(
+    ruleName: string,
+    source: Shipment,
+    target: Shipment
+  ) {
     const value = new Map();
     value.set("source", source);
     value.set("target", target);
@@ -30,11 +34,11 @@ export class Shipment {
   public applyShippingRules() {
     let shippingRules = ShippingRulesStorage.getRules();
 
-    shippingRules.forEach((shippingRule, key) => {
+    shippingRules.forEach((shippingRule) => {
       const source = this.partialCopy(this);
-      const shipmentWithRulesApplied = shippingRule.applyRule(this);
+      const shipmentWithRulesApplied = shippingRule[1].applyRule(this);
       const target = this.partialCopy(shipmentWithRulesApplied);
-      this.addAppliedRules(key, source, target);
+      this.addAppliedRules(shippingRule[0], source, target);
       Object.assign(this, shipmentWithRulesApplied);
     });
   }
@@ -48,13 +52,13 @@ export class Shipment {
     copy.shippingDiscount = this.shippingDiscount;
     return copy;
   }
+
   public validate(): boolean {
     if (
       this.date === undefined ||
       this.shipmentProviderCode === undefined ||
       this.packageSizeCode === undefined
     ) {
-      this.ignore = true;
       return false;
     }
     return true;
@@ -62,16 +66,17 @@ export class Shipment {
 
   public fromString(str: string, delimiter = " "): Shipment {
     const [date, packageSizeCode, shipmentProviderCode] = str.split(delimiter);
-
-    this.date = new Date(date);
-    this.shipmentProviderCode = shipmentProviderCode as ShippingProvider;
-    this.packageSizeCode = packageSizeCode as PackingSize;
+    if (Date.parse(date)) {
+      this.date = new Date(date);
+    }
+    this.shipmentProviderCode =
+      (shipmentProviderCode as ShippingProvider) || undefined;
+    this.packageSizeCode = (packageSizeCode as PackingSize) || undefined;
     return this;
   }
 
   public toString(delimiter = " "): string {
     const date = this.date?.toISOString().slice(0, 10);
-
     const shippingDiscount =
       this.shippingDiscount === 0
         ? "-"
@@ -91,7 +96,12 @@ export class Shipment {
         : this.shipmentProviderCode;
     const shippingCostValue =
       shippingCost === Infinity ? "Ignored" : shippingCost;
-
-    return `${dateValue}${delimiter}${shipmentProviderCodeValue}${delimiter}${packageSizeCodeValue}${delimiter}${shippingCostValue}${delimiter}${shippingDiscount} \n`;
+    if (
+      packageSizeCodeValue === "Ignored" ||
+      shipmentProviderCodeValue === "Ignored"
+    ) {
+      return `${dateValue}${delimiter}${packageSizeCodeValue}${delimiter}${shipmentProviderCodeValue}\n`;
+    }
+    return `${dateValue}${delimiter}${packageSizeCodeValue}${delimiter}${shipmentProviderCodeValue}${delimiter}${shippingCostValue}${delimiter}${shippingDiscount}\n`;
   }
 }
