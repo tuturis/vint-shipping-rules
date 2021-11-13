@@ -19,6 +19,7 @@ There are couple options to run the program:
 - [Using `ts-node` command.](#using-ts-node-or-npm)
 - [Using `npm` run script command.](#using-ts-node-or-npm). This (`npm run start`) method does not allow running custom scripts (simply).
 - [Using `binary executable` with files attacked to this repository or build from source](#using-binary)
+- [Running tests](#running-tests)
 
 #### Prerequisites for nodejs
 
@@ -112,6 +113,17 @@ Windows executable (and others) works by executing it from command line
 To continue see if [node.js prerequisites](#prerequisites-for-nodejs) are fulfilled to continue with this
 method. [dependencies should be installed](#installing-the-dependencies) as well.
 Then run `npm run package` and look for the contents inside bin folder. Again macOS and maybe linux user has to do more to use the binary - sign it with developer keys or `chamod +x` (haven't tested it yet).
+
+#### Running tests
+
+Where are they running?
+To continue see if [node.js prerequisites](#prerequisites-for-nodejs) are fulfilled to continue with this
+method. [dependencies should be installed](#installing-the-dependencies) as well.
+Then run
+
+```
+npm run test
+```
 
 ### Developing the application further
 
