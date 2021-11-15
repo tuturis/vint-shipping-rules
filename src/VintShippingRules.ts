@@ -1,56 +1,45 @@
 import { createReadStream } from "fs";
-import { EventEmitter } from "stream";
+import { Interface as ReadlineInterface } from "readline";
 
 import { Shipment } from "./shared/Shipment";
 
 type VintShippingRulesOptions = {
   pathToFile: string;
-  lineEndings?: string | RegExp;
   delimiter?: string;
 };
-export class VintShippingRules extends EventEmitter {
-  private filename: string;
-  private lineEndings: string | RegExp;
+export class VintShippingRules extends ReadlineInterface {
   private delimiter: string;
-
   constructor(
     options: VintShippingRulesOptions = {
       pathToFile: "input.txt",
-      lineEndings: /\r?\n/,
       delimiter: " ",
     }
   ) {
-    super();
-    this.filename = options.pathToFile;
-    this.lineEndings = options.lineEndings ? options.lineEndings : /\r?\n/;
+    const inputStream = createReadStream(options.pathToFile);
+    super({
+      input: inputStream,
+    });
     this.delimiter = options.delimiter ? options.delimiter : " ";
 
-    this.on("shipmentData", (data) => {
-      this.output(data.toString());
-    });
+    this.pause();
   }
 
   public output(data: string) {
-    process.stdout.write(data.toString());
+    process.stdout.write(data);
   }
 
   public async processInput() {
     return new Promise((resolve, reject) => {
-      const inputStream = createReadStream(this.filename);
-
-      inputStream.on("data", (chunk) => {
-        const lines = chunk.toString().split(this.lineEndings);
-        lines.forEach((line) => {
-          const shipment = new Shipment().fromString(line, this.delimiter);
-          if (shipment.validate()) {
-            shipment.applyShippingRates();
-            shipment.applyShippingRules();
-          }
-          this.emit("shipmentData", shipment.toString());
-        });
+      this.resume();
+      this.on("line", (line) => {
+        const shipment = new Shipment().fromString(line, this.delimiter);
+        if (shipment.validate()) {
+          shipment.applyShippingRates();
+          shipment.applyShippingRules();
+        }
+        this.output(shipment.toString());
       });
-
-      inputStream.on("end", () => {
+      this.on("close", () => {
         resolve(true);
       });
     });
