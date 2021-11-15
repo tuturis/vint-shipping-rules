@@ -1,47 +1,47 @@
-import { createReadStream } from "fs";
-import { Interface as ReadlineInterface } from "readline";
+import { createReadStream, ReadStream } from "fs";
 
 import { Shipment } from "./shared/Shipment";
+import { LineStream } from "./utils/LineStream";
 
 type VintShippingRulesOptions = {
   pathToFile: string;
-  delimiter?: string;
+  delimiter: string;
 };
-export class VintShippingRules extends ReadlineInterface {
-  private delimiter: string;
+
+const lineStream = new LineStream();
+
+export class VintShippingRules {
+  delimiter: string;
+  pathToFile: string;
+  readStream?: ReadStream;
+  lineStream?: LineStream;
+
   constructor(
     options: VintShippingRulesOptions = {
       pathToFile: "input.txt",
       delimiter: " ",
     }
   ) {
-    const inputStream = createReadStream(options.pathToFile);
-    super({
-      input: inputStream,
-    });
-    this.delimiter = options.delimiter ? options.delimiter : " ";
-
-    this.pause();
+    this.pathToFile = options.pathToFile;
+    this.delimiter = options.delimiter;
   }
 
-  public output(data: string) {
-    process.stdout.write(data);
+  public output(string: string) {
+    process.stdout.write(string);
   }
 
   public async processInput() {
     return new Promise((resolve, reject) => {
-      this.resume();
-      this.on("line", (line) => {
-        const shipment = new Shipment().fromString(line, this.delimiter);
-        if (shipment.validate()) {
-          shipment.applyShippingRates();
-          shipment.applyShippingRules();
-        }
+      const shipment = new Shipment();
+
+      shipment.on("data", (shipment: Shipment) => {
         this.output(shipment.toString());
       });
-      this.on("close", () => {
+
+      shipment.on("end", () => {
         resolve(true);
       });
+      createReadStream(this.pathToFile).pipe(lineStream).pipe(shipment);
     });
   }
 }

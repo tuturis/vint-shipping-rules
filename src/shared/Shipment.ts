@@ -1,15 +1,34 @@
+import { Transform, TransformCallback } from "stream";
+
 import { PackingSize, ShippingProvider } from "../enums";
 import { ShipmentPricingRepository } from "../repository/ShipmentPricing";
 import { ShippingRulesStorage } from "./ShippingRulesStorage";
 
 type AppliedRules = Map<string, Map<"source" | "target", Shipment>>;
-export class Shipment {
+export class Shipment extends Transform {
+  constructor() {
+    super();
+  }
+  _transform = (
+    chunk: string,
+    encoding: BufferEncoding,
+    callback: TransformCallback
+  ) => {
+    const shipment = new Shipment();
+    shipment.fromString(chunk, " ");
+    if (shipment.validate()) {
+      shipment.applyShippingRates();
+      shipment.applyShippingRules();
+    }
+    this.push(shipment.toString());
+    callback();
+  };
+
   private _appliedRules: AppliedRules = new Map();
 
   date!: Date;
   shipmentProviderCode!: ShippingProvider;
   packageSizeCode!: PackingSize;
-
   shippingCost: number = Infinity;
   shippingDiscount: number = 0;
 
