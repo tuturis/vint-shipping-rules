@@ -1,16 +1,27 @@
 import { expect } from "chai";
+import { ShippingProvider } from "../..";
 
 import { ShipmentsDiscountRepository } from "../../repository/ShipmentDiscounts";
 import { ShipmentsRepository } from "../../repository/Shipments";
 import { Shipment } from "../../shared/Shipment";
+import { ShippingRulesStorage } from "../../shared/ShippingRulesStorage";
 import { DiscountAccumulation } from "../DiscountAccumulation";
 import { EveryThirdLarge } from "../EveryThirdLarge";
 import { SmallPackageLowestCostRule } from "../SmallPackageLowestCostRule";
 
+// needs to be referenced by the compiler so it will get added to shippingRulesStorage
+DiscountAccumulation;
+EveryThirdLarge;
+SmallPackageLowestCostRule;
+
 describe("Discount Accumulation", () => {
-  const smallPackageLowestCostRule = new SmallPackageLowestCostRule();
-  const discountAccumulationRule = new DiscountAccumulation();
-  const everyThirdLargeRule = new EveryThirdLarge();
+  let smallPackageLowestCostRule = ShippingRulesStorage.getRule(
+    "SmallPackageLowestCostRule"
+  );
+  let discountAccumulationRule = ShippingRulesStorage.getRule(
+    "DiscountAccumulation"
+  );
+  let everyThirdLargeRule = ShippingRulesStorage.getRule("EveryThirdLarge");
 
   beforeEach(() => {
     ShipmentsRepository.clearAll();
@@ -18,12 +29,12 @@ describe("Discount Accumulation", () => {
   });
 
   it(`should stop giving discounts for "SmallPackageLowestCost" after
-   exceeding total discount of 10 currency per month`, () => {
+   exceeding total discount of 10 currency per month and revert applied provider change to original one`, () => {
     const shipmentData = Array.from<string>({ length: 21 }).fill(
       "2015-02-01 S MR"
     );
     shipmentData.push(
-      ...Array.from<string>({ length: 21 }).fill("2015-03-05 S MR")
+      ...Array.from<string>({ length: 22 }).fill("2015-03-05 S MR")
     );
 
     shipmentData.forEach((string, index) => {
@@ -40,11 +51,22 @@ describe("Discount Accumulation", () => {
         smallPackageLowestCostRule.applyRule(shipment);
       const shipmentDiscountAccumulationRuleApplied =
         discountAccumulationRule.applyRule(shipmenSmallPackageRuleApplied);
-
       if (totalDiscount >= discountAccumulationRule.monthlyDiscountLimit) {
+        expect(
+          shipmentDiscountAccumulationRuleApplied.shipmentProviderCode
+        ).to.be.equal(ShippingProvider["Mondial Relay"]);
+
         expect(
           shipmentDiscountAccumulationRuleApplied.shippingDiscount
         ).to.be.equal(0);
+      } else {
+        expect(
+          shipmentDiscountAccumulationRuleApplied.shipmentProviderCode
+        ).to.be.equal(ShippingProvider["La Poste"]);
+
+        expect(
+          shipmentDiscountAccumulationRuleApplied.shippingDiscount
+        ).to.be.equal(50);
       }
     });
   });

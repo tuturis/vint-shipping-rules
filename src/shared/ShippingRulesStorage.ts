@@ -23,9 +23,12 @@ class ShippingRule {
       this.metadata.unshift([target, metadata]);
     }
   }
-  public getRule(target: string): ShippingCostRule | undefined {
+  public getRule(target: string): ShippingCostRule {
     const rule = this.metadata.find((rule) => rule[0] === target);
-    return rule ? rule[1] : undefined;
+    if (!rule) {
+      throw new Error(`ShippingRule: Rule for target ${target} not found`);
+    }
+    return rule[1];
   }
   public getRules() {
     return this.metadata;
