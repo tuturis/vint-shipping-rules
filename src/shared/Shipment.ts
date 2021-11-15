@@ -16,11 +16,7 @@ export class Shipment {
   get appliedRules(): AppliedRules {
     return this._appliedRules;
   }
-  private addAppliedRules(
-    ruleName: string,
-    source: Shipment,
-    target: Shipment
-  ) {
+  public addAppliedRule(ruleName: string, source: Shipment, target: Shipment) {
     const value = new Map();
     value.set("source", source);
     value.set("target", target);
@@ -35,22 +31,9 @@ export class Shipment {
     let shippingRules = ShippingRulesStorage.getRules();
 
     shippingRules.forEach((shippingRule) => {
-      const source = this.partialCopy(this);
       const shipmentWithRulesApplied = shippingRule[1].applyRule(this);
-      const target = this.partialCopy(shipmentWithRulesApplied);
-      this.addAppliedRules(shippingRule[0], source, target);
       Object.assign(this, shipmentWithRulesApplied);
     });
-  }
-
-  private partialCopy(shipment: Shipment): Shipment {
-    const copy = new Shipment();
-    copy.date = this.date;
-    copy.shipmentProviderCode = this.shipmentProviderCode;
-    copy.packageSizeCode = this.packageSizeCode;
-    copy.shippingCost = this.shippingCost;
-    copy.shippingDiscount = this.shippingDiscount;
-    return copy;
   }
 
   public validate(): boolean {
