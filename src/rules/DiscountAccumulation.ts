@@ -31,6 +31,7 @@ export class DiscountAccumulation implements ShippingCostRule {
           shipment.shippingCost = shipmentRuleSourceData.shippingCost;
         }
       });
+      return shipment;
     }
 
     if (totalMonthlyDiscount + shippingDiscount >= this.monthlyDiscountLimit) {
