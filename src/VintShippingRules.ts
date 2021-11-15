@@ -1,7 +1,7 @@
 import { createReadStream } from "fs";
-import { Shipment } from "./shared/Shipment";
-import "./rules";
 import { EventEmitter } from "stream";
+
+import { Shipment } from "./shared/Shipment";
 
 type VintShippingRulesOptions = {
   pathToFile: string;
