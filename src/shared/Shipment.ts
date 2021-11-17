@@ -15,7 +15,7 @@ export class Shipment extends Transform {
     callback: TransformCallback
   ) => {
     const shipment = new Shipment();
-    shipment.fromString(chunk, " ");
+    shipment.fromString(chunk.toString(), " ");
     if (shipment.validate()) {
       shipment.applyShippingRates();
       shipment.applyShippingRules();
